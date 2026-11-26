@@ -29,19 +29,32 @@ public:
         using reference = ScalarResult&;
 
         Iterator() = default;
+        Iterator(std::vector<std::string>::const_iterator it, const ScalarResults* parent)
+            : it_(it), parent_(parent) {}
 
         // Iterator must be constructable from ScalarResults parent
-        Iterator& operator++();
-        ScalarResult operator*() const;
-        bool operator!=(const Iterator& other) const;
+        Iterator& operator++() { ++it_; return *this; }
+
+        ScalarResult operator*() const {
+            return (*parent_)[*it_].value(); // safe to unwrap, tradeIds_ vector will never return std::nullopt
+        }
+
+        bool operator!=(const Iterator& other) const {
+            return it_ != other.it_;
+        }
+
+    private: 
+        std::vector<std::string>::const_iterator it_;
+        const ScalarResults* parent_ = nullptr;
     };
 
-    Iterator begin() const;
-    Iterator end() const;
+    Iterator begin() const { return Iterator(tradeIds_.begin(), this); }
+    Iterator end() const { return Iterator(tradeIds_.end(), this); }
 
 private:
     std::map<std::string, double> results_;
     std::map<std::string, std::string> errors_;
+    std::vector<std::string> tradeIds_; // Minimal vector to track unique trades for iteration
 };
 
 #endif // SCALARRESULTS_H
