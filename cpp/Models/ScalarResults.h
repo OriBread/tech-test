@@ -36,7 +36,7 @@ public:
         Iterator& operator++() { ++it_; return *this; }
 
         ScalarResult operator*() const {
-            return (*parent_)[*it_].value(); // safe to unwrap, tradeIds_ vector will never return std::nullopt
+            return (*parent_)[*it_].value(); // safe to unwrap, tradeIds_ vector will never return std::nullopt (internal iterator use guarantees string is in either results_ or errors_; see .cpp implementation)
         }
 
         bool operator!=(const Iterator& other) const {
