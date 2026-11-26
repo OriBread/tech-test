@@ -29,29 +29,20 @@ bool ScalarResults::containsTrade(const std::string& tradeId) const {
 }
 
 void ScalarResults::addResult(const std::string& tradeId, double result) {
+    if (!containsTrade(tradeId)) { // O(logN) on std::map::find, very performant at scale
+        tradeIds_.push_back(tradeId);
+    }
     results_[tradeId] = result;
 }
 
 void ScalarResults::addError(const std::string& tradeId, const std::string& error) {
+    if (!containsTrade(tradeId)) {
+        tradeIds_.push_back(tradeId);
+    }
     errors_[tradeId] = error;
 }
 
-ScalarResults::Iterator& ScalarResults::Iterator::operator++() {
-    throw std::runtime_error("Iterator not implemented");
-}
-
-ScalarResult ScalarResults::Iterator::operator*() const {
-    throw std::runtime_error("Iterator not implemented");
-}
-
-bool ScalarResults::Iterator::operator!=(const Iterator& other) const {
-    throw std::runtime_error("Iterator not implemented");
-}
-
-ScalarResults::Iterator ScalarResults::begin() const {
-    throw std::runtime_error("Not implemented");
-}
-
-ScalarResults::Iterator ScalarResults::end() const {
-    throw std::runtime_error("Not implemented");
-}
+/* Iterator only needs to track to track the std::vector::const_iterator, 
+    complexity outsourced to standard library, operator overloading delegated to 
+    header file (implicit inlining & zero overhead inlining)
+*/
